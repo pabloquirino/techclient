@@ -1,0 +1,12 @@
+# .NET / C#
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+**/appsettings.Development.json
+**/appsettings.Production.json
+
+# IDEs
+.vscode/
+.idea/
+*.DS_Store
