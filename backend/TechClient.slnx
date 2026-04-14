@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="TechClient.API/TechClient.API.csproj" />
+  <Project Path="TechClient.Application/TechClient.Application.csproj" />
+  <Project Path="TechClient.Domain/TechClient.Domain.csproj" />
+  <Project Path="TechClient.Infrastructure/TechClient.Infrastructure.csproj" />
+</Solution>
