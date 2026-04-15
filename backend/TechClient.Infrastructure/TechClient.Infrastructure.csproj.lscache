@@ -56,10 +56,16 @@ TemporaryDependencyNodeTargetIdentifier=net10.0
 /warnaserror+:NU1605,SYSLIB0011
 
 [sourceFiles]
+Data/Mappings/
+ CalledMapping.cs
+ ClientMapping.cs
+ ConversationMessageMapping.cs
 Data/TechClientDbContext.cs
 Migrations/
  20260414181936_InitialCreate.cs
  20260414181936_InitialCreate.Designer.cs
+ 20260415002905_AddCalledAndConversationMessage.cs
+ 20260415002905_AddCalledAndConversationMessage.Designer.cs
  TechClientDbContextModelSnapshot.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs

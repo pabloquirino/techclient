@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechClient.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using TechClient.Infrastructure.Data;
 namespace TechClient.Infrastructure.Migrations
 {
     [DbContext(typeof(TechClientDbContext))]
-    partial class TechClientDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260415002905_AddCalledAndConversationMessage")]
+    partial class AddCalledAndConversationMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
