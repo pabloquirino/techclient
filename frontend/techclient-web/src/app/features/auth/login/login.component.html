@@ -1,0 +1,18 @@
+<div class="login-container">
+  <div class="login-card">
+    <img src="assets/logo/techclient.jpg" alt="logo-techclient" draggable="false">
+    <p>Suporte ao cliente inteligente</p>
+
+    <input
+      type="email"
+      placeholder="E-mail"
+      [(ngModel)]="email"
+    />
+    <input
+      type="password"
+      placeholder="Senha"
+      [(ngModel)]="password"
+    />
+    <button (click)="onSubmit()">Entrar</button>
+  </div>
+</div>
