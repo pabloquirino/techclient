@@ -1,0 +1,49 @@
+services:
+
+  techclient-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: techclient-db
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - techclient-db-data:/var/opt/mssql
+    networks:
+      - techclient-network
+
+  techclient-api:
+    build:
+      context: ../../
+      dockerfile: backend/TechClient.API/Dockerfile
+    container_name: techclient-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__DefaultConnection: "Server=techclient-db;Database=${DB_NAME};User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - techclient-db
+    networks:
+      - techclient-network
+
+  techclient-web:
+    build:
+      context: ../../frontend/techclient-web
+      dockerfile: Dockerfile
+    container_name: techclient-web
+    ports:
+      - "4200:80"
+    depends_on:
+      - techclient-api
+    networks:
+      - techclient-network
+
+volumes:
+  techclient-db-data:
+
+networks:
+  techclient-network:
+    driver: bridge
