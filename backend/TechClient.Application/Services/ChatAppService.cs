@@ -4,27 +4,35 @@ using TechClient.Domain.Models;
 
 namespace TechClient.Application.Services;
 
-public class ChatAppService(IChatService chatService)
+public class ChatAppService(
+    IChatService dialogflowService,
+    IGenerativeAIService generativeAIService)
 {
-    private readonly IChatService _chatService = chatService;
+    private readonly IChatService _dialogflowService = dialogflowService;
+    private readonly IGenerativeAIService _generativeAIService = generativeAIService;
 
     public async Task<ChatResponseDto> HandleMessageAsync(ChatRequestDto dto)
     {
-        // DTO → Domain
-        var request = new ChatRequest
+        var domainRequest = new ChatRequest
         {
             SessionId = dto.SessionId,
             Message = dto.Message
         };
 
-        var response = await _chatService.SendMessageAsync(request);
+        var dialogflowResponse = await _dialogflowService.SendMessageAsync(domainRequest);
 
-        // Domain → DTO
+        ChatResponse finalResponse;
+
+        if (dialogflowResponse.IsFallback)
+            finalResponse = await _generativeAIService.GenerateResponseAsync(domainRequest);
+        else
+            finalResponse = dialogflowResponse;
+
         return new ChatResponseDto
         {
-            SessionId = response.SessionId,
-            Reply = response.Reply,
-            Intent = response.Intent
+            SessionId = finalResponse.SessionId,
+            Reply = finalResponse.Reply,
+            Source = dialogflowResponse.IsFallback ? "generative-ai" : "dialogflow"
         };
     }
 }

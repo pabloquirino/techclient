@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TechClientDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IGenerativeAIService, OpenAIService>();
 builder.Services.AddScoped<IChatService, DialogflowService>();
 builder.Services.AddScoped<ChatAppService>();
 builder.Services.AddControllers();

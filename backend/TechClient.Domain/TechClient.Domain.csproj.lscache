@@ -58,7 +58,9 @@ Entities/
  Called.cs
  Client.cs
  ConversationMessage.cs
-Interfaces/IChatService.cs
+Interfaces/
+ IChatService.cs
+ IGenerativeAIService.cs
 Models/
  ChatRequest.cs
  ChatResponse.cs
