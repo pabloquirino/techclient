@@ -31,21 +31,21 @@ public class DialogflowService : IChatService
             _projectId, _location, _agentId, request.SessionId
         );
 
-        var client = await new SessionsClientBuilder
+        var clientBuilder = new SessionsClientBuilder
         {
             Endpoint = $"{_location}-dialogflow.googleapis.com"
-        }.BuildAsync();
-
-        var queryInput = new QueryInput
-        {
-            Text = new TextInput { Text = request.Message },
-            LanguageCode = "pt-BR"
         };
+
+        var client = await clientBuilder.BuildAsync();
 
         var detectRequest = new DetectIntentRequest
         {
             Session = sessionName.ToString(),
-            QueryInput = queryInput
+            QueryInput = new QueryInput
+            {
+                Text = new TextInput { Text = request.Message },
+                LanguageCode = "pt-BR"
+            }
         };
 
         var response = await client.DetectIntentAsync(detectRequest);
@@ -55,12 +55,17 @@ public class DialogflowService : IChatService
             .SelectMany(m => m.Text.Text_));
 
         var intentName = response.QueryResult.Match?.Intent?.DisplayName;
+        var isFallback = string.IsNullOrWhiteSpace(replyText) ||
+                         intentName == null ||
+                         intentName.Contains("sys.no-match");
 
         return new ChatResponse
         {
             SessionId = request.SessionId,
+            Message = request.Message,
             Reply = replyText,
-            Intent = intentName
+            Intent = intentName,
+            IsFallback = isFallback
         };
     }
 }
