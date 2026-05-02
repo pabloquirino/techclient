@@ -59,7 +59,10 @@ Entities/
  Client.cs
  ConversationMessage.cs
 Interfaces/
+ ICalledRepository.cs
  IChatService.cs
+ IClientRepository.cs
+ IConversationRepository.cs
  IGenerativeAIService.cs
 Models/
  ChatRequest.cs
