@@ -64,11 +64,17 @@ Migrations/
  20260414181936_InitialCreate.Designer.cs
  20260415002905_AddCalledAndConversationMessage.cs
  20260415002905_AddCalledAndConversationMessage.Designer.cs
+ 20260502155038_EnsureSchema.cs
+ 20260502155038_EnsureSchema.Designer.cs
  TechClientDbContextModelSnapshot.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  TechClient.Infrastructure.AssemblyInfo.cs
  TechClient.Infrastructure.GlobalUsings.g.cs
+Repositories/
+ CalledRepository.cs
+ ClientRepository.cs
+ ConversationRepository.cs
 Services/
  DialogflowService.cs
  OpenAIService.cs
