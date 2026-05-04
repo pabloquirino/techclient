@@ -33,26 +33,35 @@ namespace TechClient.Infrastructure.Migrations
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("ClosedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("Protocol")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.ToTable("Calleds");
+                    b.HasIndex("Protocol")
+                        .IsUnique();
+
+                    b.ToTable("Calleds", (string)null);
                 });
 
             modelBuilder.Entity("TechClient.Domain.Entities.Client", b =>
@@ -68,26 +77,87 @@ namespace TechClient.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Clients");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Clients", (string)null);
+                });
+
+            modelBuilder.Entity("TechClient.Domain.Entities.ConversationMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CalledId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Sender")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CalledId");
+
+                    b.ToTable("ConversationMessages", (string)null);
                 });
 
             modelBuilder.Entity("TechClient.Domain.Entities.Called", b =>
                 {
                     b.HasOne("TechClient.Domain.Entities.Client", "Client")
-                        .WithMany()
+                        .WithMany("Calleds")
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("TechClient.Domain.Entities.ConversationMessage", b =>
+                {
+                    b.HasOne("TechClient.Domain.Entities.Called", "Called")
+                        .WithMany("Messages")
+                        .HasForeignKey("CalledId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Called");
+                });
+
+            modelBuilder.Entity("TechClient.Domain.Entities.Called", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("TechClient.Domain.Entities.Client", b =>
+                {
+                    b.Navigation("Calleds");
                 });
 #pragma warning restore 612, 618
         }

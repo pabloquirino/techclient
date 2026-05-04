@@ -26,11 +26,17 @@ connect.lock
 libpeerconnection.log
 typings/
 
+# Docker / Ambiente
+.env
+*.env
+docker-compose.override.yml
+
 # .NET / Backend
 **/bin/
 **/obj/
 **/*.user
 **/*.suo
+**/credentials/
 
 # Sensitive configs
 **/appsettings.Development.json

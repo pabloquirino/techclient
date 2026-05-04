@@ -1,0 +1,12 @@
+# NuGet config local do Windows
+NuGet.Config
+**/NuGet.Config
+nuget.config
+**/nuget.config
+
+# Pastas desnecessárias no build
+**/.git
+**/.vs
+**/bin
+**/obj
+**/.idea

@@ -1,0 +1,58 @@
+services:
+
+  techclient-db:
+    env_file:
+      - ../../.env
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: techclient-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      SA_PASSWORD: ${DB_PASSWORD}   
+    ports:
+      - "1433:1433"
+    volumes:
+      - techclient-db-data:/var/opt/mssql
+    networks:
+      - techclient-network
+
+  techclient-api:
+    env_file:
+      - ../../.env
+    build:
+      context: ../../
+      dockerfile: backend/TechClient.API/Dockerfile
+    container_name: techclient-api
+    secrets:
+      - dialogflow_json
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/dialogflow_json
+    ports:
+      - "5000:8080"
+    depends_on:
+      - techclient-db
+    networks:
+      - techclient-network
+
+  techclient-web:
+    build:
+      context: ../../frontend/techclient-web
+      dockerfile: Dockerfile
+    container_name: techclient-web
+    ports:
+      - "4200:80"
+    depends_on:
+      - techclient-api
+    networks:
+      - techclient-network
+
+volumes:
+  techclient-db-data:
+
+networks:
+  techclient-network:
+    driver: bridge
+
+secrets:                            
+  dialogflow_json:
+    file: ../../dialogflow_credentials.json

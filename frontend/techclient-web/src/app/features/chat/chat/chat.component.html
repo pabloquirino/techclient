@@ -1,14 +1,45 @@
 <div class="chat-container">
+
   <div class="chat-header">
-    <span>TechClient — Suporte</span>
+    <span class="chat-title">TechClient — Suporte</span>
+    <span class="chat-status">Online</span>
   </div>
 
-  <div class="chat-messages">
-    <p class="message bot">Olá! Como posso te ajudar hoje?</p>
+  <div class="chat-messages" #messagesContainer>
+
+    @if (chatService.messages().length === 0) {
+    <div class="chat-empty">
+      <p>Olá! Como posso te ajudar hoje? 👋</p>
+    </div>
+    }
+
+    @for (message of chatService.messages(); track message.timestamp) {
+    <div class="message" [class.user]="message.sender === 'user'" [class.bot]="message.sender === 'bot'">
+      <span class="message-content">{{ message.content }}</span>
+      @if (message.sender === 'bot' && message.source === 'generative-ai') {
+      <span class="message-badge">IA</span>
+      }
+    </div>
+    }
+
+    @if (chatService.isLoading()) {
+    <div class="message bot">
+      <span class="typing">
+        <span></span><span></span><span></span>
+      </span>
+    </div>
+    }
+
   </div>
 
   <div class="chat-input">
-    <input type="text" placeholder="Digite sua mensagem..." />
-    <button>Enviar</button>
+    <input type="text" placeholder="Digite sua mensagem..." [(ngModel)]="inputMessage" (keydown)="onKeyDown($event)"
+      [disabled]="chatService.isLoading()" maxlength="500" />
+    <span class="char-count">{{ inputMessage.length }}/500</span>
+
+    <button (click)="onSend()" [disabled]="chatService.isLoading()">
+      Enviar
+    </button>
   </div>
+
 </div>
