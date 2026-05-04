@@ -1,4 +1,5 @@
 using TechClient.Application.DTOs;
+using TechClient.Domain.Exceptions;
 using TechClient.Domain.Interfaces;
 using TechClient.Domain.Models;
 
@@ -13,6 +14,13 @@ public class ChatAppService(
 
     public async Task<ChatResponseDto> HandleMessageAsync(ChatRequestDto dto)
     {
+
+        if (string.IsNullOrWhiteSpace(dto.Message))
+            throw new BusinessException("Message cannot be empty.");
+
+        if (dto.Message.Length > 500)
+            throw new BusinessException("Message cannot exceed 500 characters.");
+
         var domainRequest = new ChatRequest
         {
             SessionId = dto.SessionId,
