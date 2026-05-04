@@ -1,5 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ChatMessage, ChatRequest, ChatResponse } from '../models/chat.model';
@@ -12,7 +13,7 @@ export class ChatService {
   isLoading = signal(false);
   sessionId = signal(crypto.randomUUID());
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   async sendMessage(content: string): Promise<void> {
     this.addMessage({ content, sender: 'user', timestamp: new Date() });
@@ -34,15 +35,25 @@ export class ChatService {
         source: response.source,
         timestamp: new Date()
       });
-    } catch {
-      this.addMessage({
-        content: 'Desculpe, ocorreu um erro. Tente novamente.',
-        sender: 'bot',
-        timestamp: new Date()
-      });
+
+    } catch (error) {
+      const message = this.resolveErrorMessage(error);
+      this.addMessage({ content: message, sender: 'bot', timestamp: new Date() });
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  private resolveErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 0)
+        return 'Não foi possível conectar ao servidor. Verifique sua conexão.';
+      if (error.status === 400)
+        return error.error?.message ?? 'Mensagem inválida.';
+      if (error.status >= 500)
+        return 'Erro interno. Nossa equipe já foi notificada.';
+    }
+    return 'Ocorreu um erro inesperado. Tente novamente.';
   }
 
   private addMessage(message: ChatMessage): void {

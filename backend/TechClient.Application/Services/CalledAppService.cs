@@ -1,6 +1,7 @@
 using TechClient.Application.DTOs;
 using TechClient.Domain.Entities;
 using TechClient.Domain.Interfaces;
+using TechClient.Domain.Exceptions;
 
 namespace TechClient.Application.Services;
 
@@ -16,7 +17,7 @@ public class CalledAppService(
     public async Task<CalledResponseDto> OpenCalledAsync(OpenCalledDto dto)
     {
         var client = await _clientRepository.GetByEmailAsync(dto.ClientEmail)
-            ?? throw new Exception($"Client not found: {dto.ClientEmail}");
+            ?? throw new NotFoundException("Client", dto.ClientEmail);
 
         var called = new Called
         {
@@ -41,7 +42,7 @@ public class CalledAppService(
     public async Task<CalledResponseDto> GetByProtocolAsync(string protocol)
     {
         var called = await _calledRepository.GetByProtocolAsync(protocol)
-            ?? throw new Exception($"Called not found: {protocol}");
+            ?? throw new NotFoundException("Called", protocol   );
 
         return new CalledResponseDto
         {

@@ -58,6 +58,9 @@ Entities/
  Called.cs
  Client.cs
  ConversationMessage.cs
+Exceptions/
+ BusinessException.cs
+ NotFoundException.cs
 Interfaces/
  ICalledRepository.cs
  IChatService.cs
