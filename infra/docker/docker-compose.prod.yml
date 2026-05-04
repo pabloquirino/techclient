@@ -1,38 +1,38 @@
 services:
 
   techclient-db:
-    env_file:
-      - ../../.env
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: techclient-db
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_PID: Developer
       SA_PASSWORD: ${DB_PASSWORD}   
-    ports:
-      - "1433:1433"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
     volumes:
       - techclient-db-data:/var/opt/mssql
     networks:
       - techclient-network
+    restart: unless-stopped
 
   techclient-api:
-    env_file:
-      - ../../.env
     build:
       context: ../../
       dockerfile: backend/TechClient.API/Dockerfile
     container_name: techclient-api
-    secrets:
-      - dialogflow_json
     environment:
-      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/dialogflow_json
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Server=techclient-db;Database=${DB_NAME};User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
+      Dialogflow__ProjectId: ${DIALOGFLOW_PROJECT_ID}
+      Dialogflow__AgentId: ${DIALOGFLOW_AGENT_ID}
+      Dialogflow__Location: ${DIALOGFLOW_LOCATION}
+      OpenAI__ApiKey: ${OPENAI_API_KEY}
+      OpenAI__Model: ${OPENAI_MODEL}
     ports:
-      - "5000:8080"
+      - "8080:8080"
     depends_on:
       - techclient-db
     networks:
       - techclient-network
+    restart: unless-stopped
 
   techclient-web:
     build:
@@ -40,11 +40,12 @@ services:
       dockerfile: Dockerfile
     container_name: techclient-web
     ports:
-      - "4200:80"
+      - "80:80"
     depends_on:
       - techclient-api
     networks:
       - techclient-network
+    restart: unless-stopped
 
 volumes:
   techclient-db-data:
@@ -52,7 +53,3 @@ volumes:
 networks:
   techclient-network:
     driver: bridge
-
-secrets:                            
-  dialogflow_json:
-    file: ../../dialogflow_credentials.json
