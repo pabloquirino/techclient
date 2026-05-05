@@ -55,4 +55,4 @@ networks:
 
 secrets:                            
   dialogflow_json:
-    file: ../../dialogflow_credentials.json
+    file: ../../backend/TechClient.API/credentials/techclient-dialogflow.json
