@@ -21,6 +21,8 @@ WORKDIR /app
 
 RUN useradd -m appuser
 COPY --from=build /app/publish .
+COPY --from=build /src/TechClient.API/credentials ./credentials
+
 RUN chown -R appuser:appuser /app
 USER appuser
 

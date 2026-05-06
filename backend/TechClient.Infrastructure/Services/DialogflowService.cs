@@ -10,23 +10,26 @@ public class DialogflowService : IChatService
     private readonly string _projectId;
     private readonly string _agentId;
     private readonly string _location;
-    private readonly string _credentialsPath;
-
+    
     public DialogflowService(IConfiguration configuration)
     {
         _projectId = configuration["Dialogflow:ProjectId"]!;
         _agentId = configuration["Dialogflow:AgentId"]!;
         _location = configuration["Dialogflow:Location"]!;
-        _credentialsPath = configuration["Dialogflow:CredentialsPath"]!;
+
+        var externalCredentials = System.Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
+        if (string.IsNullOrEmpty(externalCredentials))
+        {
+            var credentialsPath = configuration["Dialogflow:CredentialsPath"]!;
+            System.Environment.SetEnvironmentVariable(
+                "GOOGLE_APPLICATION_CREDENTIALS",
+                Path.Combine(AppContext.BaseDirectory, credentialsPath)
+            );
+        }
     }
 
     public async Task<ChatResponse> SendMessageAsync(ChatRequest request)
     {
-        System.Environment.SetEnvironmentVariable(
-            "GOOGLE_APPLICATION_CREDENTIALS",
-            Path.Combine(AppContext.BaseDirectory, _credentialsPath)
-        );
-
         var sessionName = SessionName.FromProjectLocationAgentSession(
             _projectId, _location, _agentId, request.SessionId
         );

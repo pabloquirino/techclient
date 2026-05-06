@@ -4,7 +4,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: techclient-db
     environment:
-      SA_PASSWORD: ${DB_PASSWORD}   
+      SA_PASSWORD: ${DB_PASSWORD}
       ACCEPT_EULA: "Y"
       MSSQL_PID: Express
     volumes:
@@ -12,6 +12,12 @@ services:
     networks:
       - techclient-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${DB_PASSWORD}", "-Q", "SELECT 1", "-C"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   techclient-api:
     build:
@@ -24,12 +30,16 @@ services:
       Dialogflow__ProjectId: ${DIALOGFLOW_PROJECT_ID}
       Dialogflow__AgentId: ${DIALOGFLOW_AGENT_ID}
       Dialogflow__Location: ${DIALOGFLOW_LOCATION}
-      OpenAI__ApiKey: ${OPENAI_API_KEY}
-      OpenAI__Model: ${OPENAI_MODEL}
+      OpenAI__ApiKey: ${OpenAI__ApiKey}
+      OpenAI__Model: ${OpenAI__Model}
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials/techclient-dialogflow.json
     ports:
       - "8080:8080"
+
     depends_on:
-      - techclient-db
+      techclient-db:
+        condition: service_healthy
+
     networks:
       - techclient-network
     restart: unless-stopped

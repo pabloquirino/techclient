@@ -7,14 +7,19 @@ services:
     container_name: techclient-db
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_PID: Developer
-      SA_PASSWORD: ${DB_PASSWORD}   
-    ports:
-      - "1433:1433"
+      MSSQL_PID: Express
+      SA_PASSWORD: ${DB_PASSWORD}
     volumes:
       - techclient-db-data:/var/opt/mssql
     networks:
       - techclient-network
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${DB_PASSWORD}", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   techclient-api:
     env_file:
@@ -26,13 +31,17 @@ services:
     secrets:
       - dialogflow_json
     environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Server=techclient-db;Database=${DB_NAME};User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;"
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/dialogflow_json
     ports:
       - "5000:8080"
     depends_on:
-      - techclient-db
+      techclient-db:
+        condition: service_healthy
     networks:
       - techclient-network
+    restart: unless-stopped
 
   techclient-web:
     build:
@@ -45,6 +54,7 @@ services:
       - techclient-api
     networks:
       - techclient-network
+    restart: unless-stopped
 
 volumes:
   techclient-db-data:
@@ -53,6 +63,6 @@ networks:
   techclient-network:
     driver: bridge
 
-secrets:                            
+secrets:
   dialogflow_json:
     file: ../../backend/TechClient.API/credentials/techclient-dialogflow.json
