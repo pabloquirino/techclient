@@ -35,7 +35,7 @@ como fallback para perguntas não mapeadas, garantindo uma experiência conversa
 
 ## 🏗️ Arquitetura
 <div align="center">
-  <img width="1440" height="1440" alt="image" src="https://github.com/user-attachments/assets/7d95e0d0-32fc-41b2-a464-5b9dcd8b07f1" />
+  <img width="1440" height="1260" alt="image" src="https://github.com/user-attachments/assets/1b9155ac-f9e7-4214-8c88-0679bfed13d9" />
 </div>
 
 ## 🚀 Como rodar localmente
