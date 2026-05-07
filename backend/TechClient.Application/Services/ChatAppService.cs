@@ -30,17 +30,34 @@ public class ChatAppService(
         var dialogflowResponse = await _dialogflowService.SendMessageAsync(domainRequest);
 
         ChatResponse finalResponse;
+        string source;
 
-        if (dialogflowResponse.IsFallback)
-            finalResponse = await _generativeAIService.GenerateResponseAsync(domainRequest);
-        else
+        if (dialogflowResponse.HasActiveFlow)
+        {
             finalResponse = dialogflowResponse;
+            source = "dialogflow";
+        }
+        else if (!dialogflowResponse.IsFallback && dialogflowResponse.IntentConfidence >= 0.7f)
+        {
+            finalResponse = dialogflowResponse;
+            source = "dialogflow";
+        }
+        else if (dialogflowResponse.IsFallback && !dialogflowResponse.HasActiveFlow)
+        {
+            finalResponse = await _generativeAIService.GenerateResponseAsync(domainRequest);
+            source = "generative-ai";
+        }
+        else
+        {
+            finalResponse = dialogflowResponse;
+            source = "dialogflow";
+        }
 
         return new ChatResponseDto
         {
             SessionId = finalResponse.SessionId,
             Reply = finalResponse.Reply,
-            Source = dialogflowResponse.IsFallback ? "generative-ai" : "dialogflow"
+            Source = source
         };
     }
 }

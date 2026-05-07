@@ -6,5 +6,7 @@ public class ChatResponse
     public string Reply { get; set; } = string.Empty;
     public string? Intent { get; set; }
     public required string Message { get; set; }
+    public float IntentConfidence { get; set; }  
+    public bool HasActiveFlow { get; set; } 
     public bool IsFallback { get; set; }
 }
