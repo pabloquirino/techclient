@@ -17,6 +17,14 @@
 
 ---
 
+## 🎥 Demonstração
+
+Assista à demonstração do projeto no YouTube:
+
+[▶ Ver demonstração](https://youtube.com/shorts/k6h239-GYv4)
+
+---
+
 ## 📌 Sobre o projeto
 
 O **TechClient** é um sistema fullstack de suporte ao cliente com chatbot inteligente.
